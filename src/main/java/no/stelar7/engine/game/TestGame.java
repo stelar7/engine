@@ -57,10 +57,15 @@ public class TestGame implements Game
         EngineUtils.log("glClearColor(%s, %s, %s, %s)", .8f, 0, 0, 0);
     }
     
+    float scale = 0;
+    
     @Override
     public void update()
     {
-        // LOGIC
+        program.bind();
+        scale += 0.01f;
+        program.setUniform1f("scale", (float) Math.sin(scale));
+        program.unbind();
     }
     
     
@@ -86,11 +91,11 @@ public class TestGame implements Game
         EngineUtils.log("glDrawElements(%s, %s, %s, %s)", EngineUtils.glTypeToString(GL_TRIANGLES), 3, EngineUtils.glTypeToString(GL_UNSIGNED_INT), 0);
 
 //        // This call works
-//        glBegin(GL_TRIANGLES);
-//        glVertex3f(-1, -1, 0);
-//        glVertex3f(1, -1, 0);
-//        glVertex3f(0, 1, 0);
-//        glEnd();
+        glBegin(GL_TRIANGLES);
+        glVertex3f(-1, -1, 0);
+        glVertex3f(1, -1, 0);
+        glVertex3f(0, 1, 0);
+        glEnd();
         
         
         // unbind shader and vao
