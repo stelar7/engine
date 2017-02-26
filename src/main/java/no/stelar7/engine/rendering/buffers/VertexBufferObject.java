@@ -1,5 +1,7 @@
 package no.stelar7.engine.rendering.buffers;
 
+import no.stelar7.engine.EngineUtils;
+
 import java.nio.*;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -11,8 +13,13 @@ public class VertexBufferObject
     
     public VertexBufferObject(int type)
     {
-        this.id = glGenBuffers();
         this.type = type;
+    }
+    
+    public void generate()
+    {
+        this.id = glGenBuffers();
+        EngineUtils.log("glGenBuffers() = %s", id);
     }
     
     public int getId()
@@ -20,14 +27,21 @@ public class VertexBufferObject
         return id;
     }
     
+    public int getType()
+    {
+        return type;
+    }
+    
     public void bind()
     {
         glBindBuffer(type, id);
+        EngineUtils.log("glBindBuffer(%s, %s)", EngineUtils.glTypeToString(type), id);
     }
     
     public void unbind()
     {
         glBindBuffer(type, 0);
+        EngineUtils.log("glBindBuffer(%s, %s)", EngineUtils.glTypeToString(type), 0);
     }
     
     public void setData(FloatBuffer data)
@@ -38,11 +52,7 @@ public class VertexBufferObject
     public void setData(FloatBuffer data, int draw)
     {
         glBufferData(type, data, draw);
-    }
-    
-    public void delete()
-    {
-        glDeleteBuffers(id);
+        EngineUtils.log("glBufferData(%s, %s, %s)", EngineUtils.glTypeToString(type), EngineUtils.bufferToString(data), EngineUtils.glTypeToString(draw));
     }
     
     public void setData(final IntBuffer data)
@@ -53,5 +63,13 @@ public class VertexBufferObject
     public void setData(IntBuffer data, int draw)
     {
         glBufferData(type, data, draw);
+        EngineUtils.log("glBufferData(%s, %s, %s)", EngineUtils.glTypeToString(type), EngineUtils.bufferToString(data), EngineUtils.glTypeToString(draw));
     }
+    
+    public void delete()
+    {
+        glDeleteBuffers(id);
+        EngineUtils.log("glDeleteBuffers(%s)", id);
+    }
+    
 }

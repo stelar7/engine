@@ -21,6 +21,8 @@ public class EngineRunner
     private long    window;
     private boolean shouldClose;
     
+    public static final boolean DEBUG_MODE = true;
+    
     private Game game;
     
     public static void main(String[] args)
