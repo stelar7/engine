@@ -1,7 +1,7 @@
 package no.stelar7.engine;
 
 import no.stelar7.engine.game.*;
-import org.joml.*;
+import org.joml.Vector2f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 

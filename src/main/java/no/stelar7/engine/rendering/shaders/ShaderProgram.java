@@ -1,6 +1,6 @@
 package no.stelar7.engine.rendering.shaders;
 
-import static org.lwjgl.opengl.GL11.GL_TRUE;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram

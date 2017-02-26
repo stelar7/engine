@@ -1,8 +1,8 @@
 package no.stelar7.engine;
 
 import java.io.*;
-import java.nio.charset.*;
-import java.util.stream.*;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 public final class EngineUtils
 {

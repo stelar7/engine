@@ -1,6 +1,6 @@
 package no.stelar7.engine.game;
 
-import no.stelar7.engine.*;
+import no.stelar7.engine.EngineUtils;
 import no.stelar7.engine.rendering.buffers.*;
 import no.stelar7.engine.rendering.shaders.*;
 
@@ -8,8 +8,8 @@ import java.nio.*;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
-import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
+import static org.lwjgl.opengl.GL20.*;
+
 
 public class TestGame implements Game
 {
@@ -77,7 +77,7 @@ public class TestGame implements Game
         glVertex3f(1, -1, 0);
         glVertex3f(0, 1, 0);
         glEnd();
-
+        
         ibo.unbind();
         vao.disableAttribIndex(0);
         vao.unbind();
