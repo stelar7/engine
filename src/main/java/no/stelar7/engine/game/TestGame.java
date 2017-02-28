@@ -61,7 +61,8 @@ public class TestGame implements Game
         
         counter = ++counter % 3;
         
-        if (counter == 0)
+        // This doesnt work on version 3.3 Core, so use an invalid counter
+        if (counter == 5)
         {
             // This call works
             glBegin(GL_TRIANGLES);
