@@ -14,7 +14,6 @@ public class ShaderProgram
 {
     
     private int id;
-    
     private Map<String, Integer> uniformLocations = new HashMap<>();
     
     public int getId()
@@ -22,29 +21,25 @@ public class ShaderProgram
         return id;
     }
     
-    public ShaderProgram()
+    public ShaderProgram(Shader vertex, Shader fragment)
     {
-        this.id = glCreateProgram();
+        generate();
+        
+        attachShader(vertex);
+        attachShader(fragment);
+        
+        link();
+        
+        validate();
+        
+        deleteShader(vertex);
+        deleteShader(fragment);
     }
     
-    public ShaderProgram(Shader... shaders)
+    public void generate()
     {
         this.id = glCreateProgram();
         EngineUtils.log("glCreateProgram() = %s", id);
-        
-        for (final Shader shader : shaders)
-        {
-            attachShader(shader);
-        }
-        
-        link();
-        validate();
-        
-        for (final Shader shader : shaders)
-        {
-            deleteShader(shader);
-        }
-        
     }
     
     
@@ -117,20 +112,20 @@ public class ShaderProgram
     public void deleteShader(final Shader shader)
     {
         glDetachShader(id, shader.getId());
-        EngineUtils.log("glDetachShader(%s, %s);", id, shader.getId());
+        EngineUtils.log("glDetachShader(%s, %s)", id, shader.getId());
         shader.delete();
     }
     
     public void attachShader(final Shader shader)
     {
         glAttachShader(id, shader.getId());
-        EngineUtils.log("glAttachShader(%s, %s);", id, shader.getId());
+        EngineUtils.log("glAttachShader(%s, %s)", id, shader.getId());
     }
     
     public void link()
     {
         glLinkProgram(id);
-        EngineUtils.log("glLinkProgram(%s);", id);
+        EngineUtils.log("glLinkProgram(%s)", id);
         
         int status = glGetProgrami(id, GL_LINK_STATUS);
         EngineUtils.log("glGetProgrami(%s, %s) = %s", id, EngineUtils.glTypeToString(GL_LINK_STATUS), EngineUtils.glTypeToString(status));

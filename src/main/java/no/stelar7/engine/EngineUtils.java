@@ -24,7 +24,7 @@ public final class EngineUtils
                 @Override
                 public String format(LogRecord record)
                 {
-                    return record.getMillis() + ": " + record.getMessage() + "\n";
+                    return record.getMessage() + "\n";
                 }
             });
             
