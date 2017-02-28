@@ -19,7 +19,6 @@ public class Model
         vbo.generate();
         ibo.generate();
         
-        
         vao.bind();
         
         vbo.bind();
@@ -29,7 +28,6 @@ public class Model
         
         ibo.bind();
         ibo.setData(ind);
-        
     }
     
     public void bind()

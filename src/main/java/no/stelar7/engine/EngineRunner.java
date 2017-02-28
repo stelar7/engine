@@ -101,6 +101,10 @@ public class EngineRunner
     {
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
+    
+        System.out.println("OS name " + System.getProperty("os.name"));
+        System.out.println("OS version " + System.getProperty("os.version"));
+        System.out.println("OpenGL version " + glGetString(GL_VERSION));
         
         // Disable vsync
         glfwSwapInterval(0);

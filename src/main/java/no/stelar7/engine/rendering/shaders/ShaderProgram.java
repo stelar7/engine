@@ -50,7 +50,7 @@ public class ShaderProgram
             return uniformLocations.get(uniform);
         }
         int uniformValue = glGetUniformLocation(id, uniform);
-        EngineUtils.log("glGetUniformLocation(%s, %s)", id, uniform, uniformValue);
+        EngineUtils.log("glGetUniformLocation(%s, %s) = %s", id, uniform, uniformValue);
         
         if (uniformValue == -1)
         {
