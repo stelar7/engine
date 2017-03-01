@@ -1,6 +1,7 @@
 package no.stelar7.engine;
 
 import no.stelar7.engine.game.*;
+import no.stelar7.engine.handlers.*;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -8,6 +9,7 @@ import org.lwjgl.opengl.*;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class EngineRunner
@@ -67,6 +69,11 @@ public class EngineRunner
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        
+        // 4xMSAA
+        glfwWindowHint(GLFW_SAMPLES, 4);
+        
+        // OpenGL 3.3.Core
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -77,7 +84,9 @@ public class EngineRunner
             throw new RuntimeException("Failed to create the GLFW window");
         }
         
-        glfwSetCursorPosCallback(window, (windowPtr, x, y) -> cursor.set((float) x, (float) y));
+        glfwSetCursorPosCallback(window, new MousePosHandler());
+        glfwSetMouseButtonCallback(window, new MouseButtonHandler());
+        glfwSetKeyCallback(window, new KeyboardHandler());
         
         glfwSetFramebufferSizeCallback(window, (windowPtr, w, h) ->
                                        {
@@ -109,8 +118,11 @@ public class EngineRunner
         
         glfwSwapInterval(0);
         glViewport(0, 0, width, height);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_MULTISAMPLE);
+        
+        
+        //glEnable(GL_DEPTH_TEST);
+        //glDepthFunc(GL_LEQUAL);
         
         
         initPostGL();

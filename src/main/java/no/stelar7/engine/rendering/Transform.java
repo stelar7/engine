@@ -4,13 +4,12 @@ import org.joml.*;
 
 public class Transform
 {
-    private Model model;
-    
     private Vector3f    position = new Vector3f(0);
     private Quaternionf rotation = new Quaternionf();
     private Vector3f    scale    = new Vector3f(1);
     
     private Matrix4f currentTransform = new Matrix4f();
+    private Matrix4f lastTransform    = new Matrix4f();
     
     public Transform()
     {
@@ -19,7 +18,13 @@ public class Transform
     
     private void updateTransform()
     {
+        lastTransform.set(currentTransform);
         new Matrix4f().translation(position).rotate(rotation).scale(scale, currentTransform);
+    }
+    
+    public boolean hasChanged()
+    {
+        return !lastTransform.equals(currentTransform);
     }
     
     public void setScale(float scl)
@@ -72,6 +77,12 @@ public class Transform
         updateTransform();
     }
     
+    public void move(float x, float y, float z)
+    {
+        position.add(x, y, z);
+        updateTransform();
+    }
+    
     public Quaternionf getRotation()
     {
         return rotation;
@@ -90,5 +101,11 @@ public class Transform
     public Vector3f getPosition()
     {
         return position;
+    }
+    
+    public void rotate(float angle, float x, float y, float z)
+    {
+        rotation.rotateAxis(angle, x, y, z);
+        updateTransform();
     }
 }

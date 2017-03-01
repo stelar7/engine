@@ -3,7 +3,6 @@ package no.stelar7.engine.game;
 import no.stelar7.engine.EngineUtils;
 import no.stelar7.engine.rendering.*;
 import no.stelar7.engine.rendering.shaders.*;
-import org.joml.Matrix4f;
 import org.lwjgl.system.*;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -16,7 +15,6 @@ public class TestGame implements Game
     private ShaderProgram shader;
     private GameObject    obj;
     private Camera        camera;
-    private Matrix4f      projection;
     
     public TestGame()
     {
@@ -32,12 +30,6 @@ public class TestGame implements Game
         obj = new GameObject(new Model(new float[]{-1, -1, 0, 1, -1, 0, 0, 1, 0}, new int[]{0, 1, 2}));
         
         camera = new Camera();
-        projection = new Matrix4f();
-        projection.setPerspective(30, 1.334f, 0.1f, 1000f);
-        
-        shader.bind();
-        //shader.setUniformMatrix4("view", camera.getViewMatrix());
-        //shader.setUniformMatrix4("projection", projection);
         
         glClearColor(.8f, 0, 0, 0);
         EngineUtils.log("glClearColor(%s, %s, %s, %s)", .8f, 0, 0, 0);
@@ -49,17 +41,14 @@ public class TestGame implements Game
     @Override
     public void update()
     {
+        camera.update();
+        
         scale += 0.01f;
-        
-        //obj.getTransform().setScale(1);
         obj.getTransform().setPosition((float) Math.sin(scale), 0, 0.5f);
-        //obj.getTransform().setPosition((float) Math.cos(scale), 0, obj.getTransform().getPosition().z() + 0.001f);
-        //obj.getTransform().setRotation(0, 0, 0);
         
-        System.out.println(obj.getTransform().getPosition());
         
         shader.bind();
-        shader.setUniformMatrix4("transformation", obj.getTransform().getCurrentTransfom());
+        shader.setUniformMatrix4("mvp", camera.calculateMVPMatrix(obj.getTransform()));
         
     }
     

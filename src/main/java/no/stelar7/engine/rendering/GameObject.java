@@ -3,7 +3,7 @@ package no.stelar7.engine.rendering;
 public class GameObject
 {
     
-    private Model     model;
+    private Model model;
     private Transform transform = new Transform();
     
     public GameObject(Model model)
