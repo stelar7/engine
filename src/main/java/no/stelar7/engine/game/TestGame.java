@@ -33,11 +33,11 @@ public class TestGame implements Game
         
         camera = new Camera();
         projection = new Matrix4f();
-        projection.setPerspective(75, 800f / 600f, 0.1f, 1000f);
+        projection.setPerspective(30, 1.334f, 0.1f, 1000f);
         
         shader.bind();
         //shader.setUniformMatrix4("view", camera.getViewMatrix());
-        shader.setUniformMatrix4("projection", projection);
+        //shader.setUniformMatrix4("projection", projection);
         
         glClearColor(.8f, 0, 0, 0);
         EngineUtils.log("glClearColor(%s, %s, %s, %s)", .8f, 0, 0, 0);
@@ -52,6 +52,7 @@ public class TestGame implements Game
         scale += 0.01f;
         
         //obj.getTransform().setScale(1);
+        obj.getTransform().setPosition((float) Math.sin(scale), 0, 0.5f);
         //obj.getTransform().setPosition((float) Math.cos(scale), 0, obj.getTransform().getPosition().z() + 0.001f);
         //obj.getTransform().setRotation(0, 0, 0);
         
