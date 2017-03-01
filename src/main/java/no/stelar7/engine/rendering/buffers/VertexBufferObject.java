@@ -3,6 +3,7 @@ package no.stelar7.engine.rendering.buffers;
 import no.stelar7.engine.EngineUtils;
 
 import java.nio.*;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL15.*;
 
@@ -72,4 +73,14 @@ public class VertexBufferObject
         EngineUtils.log("glDeleteBuffers(%s)", id);
     }
     
+    public void setData(float[] data)
+    {
+        setData(data, GL_STATIC_DRAW);
+    }
+    
+    public void setData(float[] data, int draw)
+    {
+        glBufferData(type, data, GL_STATIC_DRAW);
+        EngineUtils.log("glBufferData(%s, %s, %s)", EngineUtils.glTypeToString(type), Arrays.toString(data), EngineUtils.glTypeToString(draw));
+    }
 }

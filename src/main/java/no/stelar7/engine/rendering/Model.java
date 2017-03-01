@@ -1,6 +1,7 @@
 package no.stelar7.engine.rendering;
 
 import no.stelar7.engine.rendering.buffers.*;
+import org.lwjgl.*;
 
 import java.nio.*;
 
@@ -29,7 +30,29 @@ public class Model
         vertexCount = ind.capacity();
         
         unbind();
+    }
+    
+    public Model(float[] vert, int[] ind)
+    {
+        vao.generate();
+        vbo.generate();
+        ibo.generate();
         
+        bind();
+        
+        FloatBuffer vbuff = BufferUtils.createFloatBuffer(vert.length);
+        vbuff.put(vert);
+        vbuff.flip();
+        setVertices(vbuff);
+        
+        IntBuffer ibuff = BufferUtils.createIntBuffer(ind.length);
+        ibuff.put(ind);
+        ibuff.flip();
+        setIndices(ibuff);
+        
+        vertexCount = ind.length;
+        
+        unbind();
     }
     
     private void setIndices(IntBuffer ind)
