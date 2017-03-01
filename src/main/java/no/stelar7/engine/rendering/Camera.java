@@ -56,7 +56,7 @@ public class Camera
     
     public void update()
     {
-        float speed = 0.01f;
+        float speed = 0.1f;
         
         // WASD
         if (InputHandler.isKeyDown(GLFW_KEY_S))
@@ -77,23 +77,40 @@ public class Camera
         }
         
         // Up/down
-        if (InputHandler.isKeyDown(GLFW_KEY_Z))
+        if (InputHandler.isKeyDown(GLFW_KEY_Q))
         {
             transform.move(0, speed, 0);
         }
-        if (InputHandler.isKeyDown(GLFW_KEY_C))
+        if (InputHandler.isKeyDown(GLFW_KEY_E))
         {
             transform.move(0, -speed, 0);
         }
         
         // Rotation
-        if (InputHandler.isKeyDown(GLFW_KEY_Q))
+        if (InputHandler.isKeyDown(GLFW_KEY_R))
         {
             transform.rotate(speed, 0, 0, 1);
         }
-        if (InputHandler.isKeyDown(GLFW_KEY_E))
+        if (InputHandler.isKeyDown(GLFW_KEY_T))
         {
             transform.rotate(-speed, 0, 0, 1);
         }
+        if (InputHandler.isKeyDown(GLFW_KEY_F))
+        {
+            transform.rotate(speed, 0, 1, 0);
+        }
+        if (InputHandler.isKeyDown(GLFW_KEY_G))
+        {
+            transform.rotate(-speed, 0, 1, 0);
+        }
+        if (InputHandler.isKeyDown(GLFW_KEY_V))
+        {
+            transform.rotate(speed, 1, 0, 0);
+        }
+        if (InputHandler.isKeyDown(GLFW_KEY_B))
+        {
+            transform.rotate(-speed, 1, 0, 0);
+        }
+        
     }
 }
