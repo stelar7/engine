@@ -1,6 +1,7 @@
 package no.stelar7.engine.rendering.buffers;
 
 import no.stelar7.engine.EngineUtils;
+import org.lwjgl.system.*;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -48,7 +49,7 @@ public class VertexArrayObject
     
     public void setPointer(int index, int size)
     {
-        setPointer(index, size, 0, 0);
+        setPointer(index, size, 0, MemoryUtil.NULL);
     }
     
     public void setPointer(int index, int size, int stride, long offset)

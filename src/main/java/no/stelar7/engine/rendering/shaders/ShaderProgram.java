@@ -141,6 +141,7 @@ public class ShaderProgram
     
     public void delete()
     {
+        unbind();
         glDeleteProgram(id);
         EngineUtils.log("glDeleteProgram(%s)", id);
     }

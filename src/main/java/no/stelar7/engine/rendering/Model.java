@@ -13,22 +13,39 @@ public class Model
     private final VertexBufferObject vbo = new VertexBufferObject(GL_ARRAY_BUFFER);
     private final VertexBufferObject ibo = new VertexBufferObject(GL_ELEMENT_ARRAY_BUFFER);
     
+    private final int vertexCount;
+    
     public Model(FloatBuffer vert, IntBuffer ind)
     {
         vao.generate();
         vbo.generate();
         ibo.generate();
         
-        vao.bind();
+        bind();
         
+        setVertices(vert);
+        setIndices(ind);
+        
+        vertexCount = ind.capacity();
+        
+        unbind();
+        
+    }
+    
+    private void setIndices(IntBuffer ind)
+    {
+        ibo.bind();
+        ibo.setData(ind);
+    }
+    
+    private void setVertices(FloatBuffer vert)
+    {
         vbo.bind();
         vbo.setData(vert);
         vao.enableAttribIndex(0);
         vao.setPointer(0, 3);
-        
-        ibo.bind();
-        ibo.setData(ind);
     }
+    
     
     public void bind()
     {
@@ -42,8 +59,17 @@ public class Model
     
     public void delete()
     {
+        ibo.unbind();
+        vbo.unbind();
+        vao.unbind();
+        
         ibo.delete();
         vbo.delete();
         vao.delete();
+    }
+    
+    public int getVertexCount()
+    {
+        return vertexCount;
     }
 }

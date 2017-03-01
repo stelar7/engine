@@ -3,6 +3,7 @@ package no.stelar7.engine.game;
 import no.stelar7.engine.EngineUtils;
 import no.stelar7.engine.rendering.Model;
 import no.stelar7.engine.rendering.shaders.*;
+import org.lwjgl.system.*;
 
 import java.nio.*;
 
@@ -56,9 +57,10 @@ public class TestGame implements Game
         shader.bind();
         model.bind();
         
-        // This call does nothing?
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-        EngineUtils.log("glDrawElements(%s, %s, %s, %s)", EngineUtils.glTypeToString(GL_TRIANGLES), 3, EngineUtils.glTypeToString(GL_UNSIGNED_INT), 0);
+        // These calls does nothing?
+        //glDrawArrays(GL_TRIANGLES, 0, model.getVertexCount());
+        glDrawElements(GL_TRIANGLES, model.getVertexCount(), GL_UNSIGNED_INT, MemoryUtil.NULL);
+        EngineUtils.log("glDrawElements(%s, %s, %s, %s)", EngineUtils.glTypeToString(GL_TRIANGLES), model.getVertexCount(), EngineUtils.glTypeToString(GL_UNSIGNED_INT), 0);
     }
     
     @Override
