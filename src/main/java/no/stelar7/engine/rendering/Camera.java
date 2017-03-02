@@ -6,18 +6,17 @@ import org.joml.Math;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Camera
+public class Camera extends GameObject
 {
-    private Transform transform  = new Transform();
-    private Matrix4f  projection = new Matrix4f();
-    private Matrix4f  view       = new Matrix4f();
+    private Matrix4f projection = new Matrix4f();
+    private Matrix4f view       = new Matrix4f();
+    private float    fovDegrees = 75;
     
     public Camera()
     {
+        super();
         transform.setPosition(0, 0, -2);
-        
-        projection = new Matrix4f();
-        projection.setPerspective((float) Math.toRadians(75), 800f / 600f, 0.1f, 1000f);
+        projection.setPerspective((float) Math.toRadians(fovDegrees), 800f / 600f, 0.1f, 1000f);
     }
     
     public Matrix4f getViewMatrix()
@@ -112,5 +111,20 @@ public class Camera
             transform.rotate(-speed, 1, 0, 0);
         }
         
+        // fov
+        if (InputHandler.isKeyDown(GLFW_KEY_Z))
+        {
+            projection.setPerspective((float) Math.toRadians(--fovDegrees), 800f / 600f, 0.1f, 1000f);
+        }
+        if (InputHandler.isKeyDown(GLFW_KEY_C))
+        {
+            projection.setPerspective((float) Math.toRadians(++fovDegrees), 800f / 600f, 0.1f, 1000f);
+        }
+        
+    }
+    
+    public void setLookAt(float v, int i, float v1, int i1, int i2, int i3)
+    {
+        view.setLookAt(v, i, v1, i1, i2, i3, 0, 1, 0);
     }
 }

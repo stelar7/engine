@@ -5,6 +5,9 @@ import no.stelar7.engine.rendering.*;
 import no.stelar7.engine.rendering.shaders.*;
 import org.lwjgl.system.*;
 
+import java.util.*;
+import java.util.Map.Entry;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 
@@ -13,8 +16,8 @@ public class TestGame implements Game
 {
     
     private ShaderProgram shader;
-    private GameObject    obj;
     private Camera        camera;
+    private Map<Model, List<GameObject>> entities = new HashMap<>();
     
     public TestGame()
     {
@@ -27,7 +30,25 @@ public class TestGame implements Game
         fragmentShader.compile();
         
         shader = new ShaderProgram(vertexShader, fragmentShader);
-        obj = new GameObject(new Model(new float[]{-1, -1, 0, 1, -1, 0, 0, 1, 0}, new int[]{0, 1, 2}));
+        
+        float[]     vert  = new float[]{-1, -1, 0, 1, -1, 0, 0, 1, 0};
+        int[]       ind   = new int[]{0, 1, 2};
+        float[]     texd  = new float[]{0, 0, 1, 0, .5f, 1};
+        TextureData tex   = new TextureData(texd, EngineUtils.loadTexture("arrow.png"));
+        Model       model = new Model(vert, ind, tex);
+        
+        GameObject obj = new GameObject();
+        obj.setModel(model);
+        
+        GameObject obj2 = new GameObject();
+        obj2.setModel(model);
+        obj2.getTransform().move(5, 0, 0);
+        
+        List<GameObject> objs = new ArrayList<>();
+        
+        objs.add(obj);
+        objs.add(obj2);
+        entities.put(model, objs);
         
         camera = new Camera();
         
@@ -42,14 +63,17 @@ public class TestGame implements Game
     public void update()
     {
         camera.update();
-        
         scale += 0.01f;
-        obj.getTransform().setPosition((float) Math.sin(scale), 0, 0.5f);
-        
-        
-        shader.bind();
-        shader.setUniformMatrix4("mvp", camera.calculateMVPMatrix(obj.getTransform()));
-        
+        entities.forEach((k, v) ->
+                         {
+                             int cnt = 0;
+                             for (GameObject o : v)
+                             {
+                                 cnt++;
+                                 int dir = (cnt % 2 == 0 ? 1 : -1);
+                                 o.getTransform().setPosition((float) Math.sin(scale) * dir, 0, (float) Math.cos(scale) * dir);
+                             }
+                         });
     }
     
     
@@ -60,16 +84,22 @@ public class TestGame implements Game
         EngineUtils.log("glClear(%s | %s)", EngineUtils.glTypeToString(GL_COLOR_BUFFER_BIT), EngineUtils.glTypeToString(GL_DEPTH_BUFFER_BIT));
         
         shader.bind();
-        obj.getModel().bind();
-        
-        glDrawElements(GL_TRIANGLES, obj.getModel().getVertexCount(), GL_UNSIGNED_INT, MemoryUtil.NULL);
-        EngineUtils.log("glDrawElements(%s, %s, %s, %s)", EngineUtils.glTypeToString(GL_TRIANGLES), obj.getModel().getVertexCount(), EngineUtils.glTypeToString(GL_UNSIGNED_INT), MemoryUtil.NULL);
+        for (Entry<Model, List<GameObject>> entry : entities.entrySet())
+        {
+            entry.getKey().bind();
+            for (GameObject gameObject : entry.getValue())
+            {
+                shader.setUniformMatrix4("mvp", camera.calculateMVPMatrix(gameObject.getTransform()));
+                glDrawElements(GL_TRIANGLES, gameObject.getModel().getVertexCount(), GL_UNSIGNED_INT, MemoryUtil.NULL);
+                EngineUtils.log("glDrawElements(%s, %s, %s, %s)", EngineUtils.glTypeToString(GL_TRIANGLES), gameObject.getModel().getVertexCount(), EngineUtils.glTypeToString(GL_UNSIGNED_INT), MemoryUtil.NULL);
+            }
+        }
     }
     
     @Override
     public void delete()
     {
-        obj.getModel().delete();
+        entities.forEach((k, v) -> k.delete());
         shader.delete();
     }
 }

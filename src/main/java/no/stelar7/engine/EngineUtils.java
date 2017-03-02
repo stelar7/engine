@@ -1,5 +1,7 @@
 package no.stelar7.engine;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.*;
 import java.nio.charset.StandardCharsets;
@@ -123,6 +125,19 @@ public final class EngineUtils
         return null;
     }
     
+    public static BufferedImage loadTexture(String pathToFile)
+    {
+        try
+        {
+            InputStream stream = EngineUtils.class.getResourceAsStream("/textures/" + pathToFile);
+            return ImageIO.read(stream);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     
     public static void log(String data, Object... params)
     {
@@ -165,4 +180,22 @@ public final class EngineUtils
         
         return result;
     }
+    
+    public static Object bufferToString(ByteBuffer data)
+    {
+        StringBuilder result = new StringBuilder("(");
+        
+        data.mark();
+        
+        while (data.remaining() > 0)
+        {
+            result.append(data.get()).append(", ");
+        }
+        
+        result.reverse().deleteCharAt(0).deleteCharAt(0).reverse().append(")");
+        data.reset();
+        
+        return result;
+    }
+    
 }
