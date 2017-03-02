@@ -2,7 +2,9 @@ package no.stelar7.engine.game;
 
 import no.stelar7.engine.EngineUtils;
 import no.stelar7.engine.rendering.*;
+import no.stelar7.engine.rendering.models.*;
 import no.stelar7.engine.rendering.shaders.*;
+import org.joml.Math;
 import org.lwjgl.system.*;
 
 import java.util.*;
@@ -17,7 +19,7 @@ public class TestGame implements Game
     
     private ShaderProgram shader;
     private Camera        camera;
-    private Map<Model, List<GameObject>> entities = new HashMap<>();
+    private Map<Mesh, List<GameObject>> entities = new HashMap<>();
     
     public TestGame()
     {
@@ -35,7 +37,7 @@ public class TestGame implements Game
         int[]       ind   = new int[]{0, 1, 2};
         float[]     texd  = new float[]{0, 0, 1, 0, .5f, 1};
         TextureData tex   = new TextureData(texd, EngineUtils.loadTexture("arrow.png"));
-        Model       model = new Model(vert, ind, tex);
+        Mesh        model = new Mesh(vert, ind, tex);
         
         GameObject obj = new GameObject();
         obj.setModel(model);
@@ -64,13 +66,14 @@ public class TestGame implements Game
     {
         camera.update();
         scale += 0.01f;
+        
         entities.forEach((k, v) ->
                          {
                              int cnt = 0;
                              for (GameObject o : v)
                              {
                                  cnt++;
-                                 int dir = (cnt % 2 == 0 ? 1 : -1);
+                                 int dir = cnt % 2 == 0 ? 1 : -1;
                                  o.getTransform().setPosition((float) Math.sin(scale) * dir, 0, (float) Math.cos(scale) * dir);
                              }
                          });
@@ -84,7 +87,7 @@ public class TestGame implements Game
         EngineUtils.log("glClear(%s | %s)", EngineUtils.glTypeToString(GL_COLOR_BUFFER_BIT), EngineUtils.glTypeToString(GL_DEPTH_BUFFER_BIT));
         
         shader.bind();
-        for (Entry<Model, List<GameObject>> entry : entities.entrySet())
+        for (Entry<Mesh, List<GameObject>> entry : entities.entrySet())
         {
             entry.getKey().bind();
             for (GameObject gameObject : entry.getValue())

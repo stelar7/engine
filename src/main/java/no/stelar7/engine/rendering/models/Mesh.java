@@ -1,4 +1,4 @@
-package no.stelar7.engine.rendering;
+package no.stelar7.engine.rendering.models;
 
 import no.stelar7.engine.rendering.buffers.*;
 import org.lwjgl.*;
@@ -9,7 +9,7 @@ import java.util.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
-public class Model
+public class Mesh
 {
     
     private final VertexArrayObject vao = new VertexArrayObject();
@@ -22,7 +22,7 @@ public class Model
     
     private final int vertexCount;
     
-    public Model(float[] vert, int[] ind, TextureData tex)
+    public Mesh(float[] vert, int[] ind, TextureData tex)
     {
         vao.generate();
         vbo.generate();

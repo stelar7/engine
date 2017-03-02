@@ -1,6 +1,7 @@
 package no.stelar7.engine.rendering;
 
 import no.stelar7.engine.handlers.InputHandler;
+import no.stelar7.engine.rendering.models.Transform;
 import org.joml.*;
 import org.joml.Math;
 
@@ -9,7 +10,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Camera extends GameObject
 {
     private Matrix4f projection = new Matrix4f();
-    private Matrix4f view       = new Matrix4f();
     private float    fovDegrees = 75;
     
     public Camera()
@@ -21,21 +21,7 @@ public class Camera extends GameObject
     
     public Matrix4f getViewMatrix()
     {
-        if (!transform.hasChanged())
-        {
-            return view;
-        }
-        
-        Matrix4f mat = new Matrix4f();
-        Vector3f rot = transform.getRotation().getEulerAnglesXYZ(new Vector3f());
-        
-        mat.rotate(new AxisAngle4f(rot.x(), 1, 0, 0));
-        mat.rotate(new AxisAngle4f(rot.y(), 0, 1, 0));
-        mat.rotate(new AxisAngle4f(rot.z(), 0, 0, 1));
-        
-        mat.translate(transform.getPosition(), view);
-        
-        return view;
+        return transform.getCurrentTransfom();
     }
     
     public void setProjection(Matrix4f proj)
@@ -121,10 +107,5 @@ public class Camera extends GameObject
             projection.setPerspective((float) Math.toRadians(++fovDegrees), 800f / 600f, 0.1f, 1000f);
         }
         
-    }
-    
-    public void setLookAt(float v, int i, float v1, int i1, int i2, int i3)
-    {
-        view.setLookAt(v, i, v1, i1, i2, i3, 0, 1, 0);
     }
 }

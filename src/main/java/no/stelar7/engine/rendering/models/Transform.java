@@ -1,4 +1,4 @@
-package no.stelar7.engine.rendering;
+package no.stelar7.engine.rendering.models;
 
 import org.joml.*;
 
@@ -16,10 +16,12 @@ public class Transform
         updateTransform();
     }
     
+    
     private void updateTransform()
     {
         lastTransform.set(currentTransform);
-        new Matrix4f().translation(position).rotate(rotation).scale(scale, currentTransform);
+        //new Matrix4f().translation(position).rotate(rotation).scale(scale, currentTransform);
+        new Matrix4f().scaling(scale).rotate(rotation).translate(position, currentTransform);
     }
     
     public boolean hasChanged()
@@ -47,7 +49,6 @@ public class Transform
         setPosition(new Vector3f(x, y, z));
     }
     
-    
     public void setRotation(float x, float y, float z)
     {
         setRotation(new Quaternionf(x, y, z));
@@ -57,7 +58,6 @@ public class Transform
     {
         setScale(new Vector3f(x, y, z));
     }
-    
     
     public void setPosition(Vector3f pos)
     {
@@ -109,4 +109,15 @@ public class Transform
         updateTransform();
     }
     
+    public void set(Matrix4f tran)
+    {
+        lastTransform.set(currentTransform);
+        currentTransform.set(tran);
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "Transform{" + "currentTransform=" + currentTransform + '}';
+    }
 }

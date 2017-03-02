@@ -1,4 +1,4 @@
-package no.stelar7.engine.rendering;
+package no.stelar7.engine.rendering.models;
 
 import no.stelar7.engine.EngineUtils;
 import org.lwjgl.*;
@@ -86,7 +86,7 @@ public class TextureData
         pbuff.flip();
         
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, getImage().getWidth(), getImage().getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pbuff);
-        EngineUtils.log("glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, %s, %s, 0, GL_RGBA, GL_UNSIGNED_BYTE, %s)", image.getWidth(), image.getHeight(), EngineUtils.bufferToString(pbuff));
+        EngineUtils.log("glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, %s, %s, 0, GL_RGBA, GL_UNSIGNED_BYTE, %s)", image.getWidth(), image.getHeight(), "pbuff (too large)");
         glGenerateMipmap(GL_TEXTURE_2D);
         EngineUtils.log("glGenerateMipmap(GL_TEXTURE_2D)");
     }

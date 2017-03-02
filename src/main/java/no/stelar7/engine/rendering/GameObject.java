@@ -1,18 +1,20 @@
 package no.stelar7.engine.rendering;
 
+import no.stelar7.engine.rendering.models.*;
+
 public class GameObject
 {
     
     protected Transform transform = new Transform();
     
-    private Model model;
+    private Mesh model;
     
-    public void setModel(Model model)
+    public void setModel(Mesh model)
     {
         this.model = model;
     }
     
-    public Model getModel()
+    public Mesh getModel()
     {
         return model;
     }
