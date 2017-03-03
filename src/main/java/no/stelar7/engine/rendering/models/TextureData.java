@@ -5,7 +5,7 @@ import org.lwjgl.*;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -18,12 +18,34 @@ public class TextureData
     private float[]       coordinates;
     private BufferedImage image;
     
-    public TextureData(float[] inData, BufferedImage image)
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        
+        TextureData that = (TextureData) o;
+        return Arrays.equals(coordinates, that.coordinates) && ((image != null) ? image.equals(that.image) : (that.image == null));
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        int result = Arrays.hashCode(coordinates);
+        result = 31 * result + (image != null ? image.hashCode() : 0);
+        return result;
+    }
+    
+    public void setCoordinates(float[] inData)
     {
         coordinates = new float[inData.length];
         System.arraycopy(inData, 0, coordinates, 0, inData.length);
-        
-        this.image = image;
     }
     
     public float[] getCoordinates()
@@ -32,11 +54,6 @@ public class TextureData
         System.arraycopy(coordinates, 0, copy, 0, coordinates.length);
         
         return copy;
-    }
-    
-    public BufferedImage getImage()
-    {
-        return image;
     }
     
     public void generateTexture()
@@ -66,17 +83,19 @@ public class TextureData
         }
     }
     
-    public void setImageData()
+    public void setImageData(BufferedImage inputImage)
     {
-        int[] pixelData = new int[getImage().getWidth() * getImage().getHeight()];
-        getImage().getRGB(0, 0, getImage().getWidth(), getImage().getHeight(), pixelData, 0, getImage().getWidth());
-        ByteBuffer pbuff = BufferUtils.createByteBuffer(getImage().getHeight() * getImage().getWidth() * 4);
+        image = inputImage;
         
-        for (int y = 0; y < getImage().getHeight(); y++)
+        int[] pixelData = new int[inputImage.getWidth() * inputImage.getHeight()];
+        inputImage.getRGB(0, 0, inputImage.getWidth(), inputImage.getHeight(), pixelData, 0, inputImage.getWidth());
+        ByteBuffer pbuff = BufferUtils.createByteBuffer(inputImage.getHeight() * inputImage.getWidth() * 4);
+        
+        for (int y = 0; y < inputImage.getHeight(); y++)
         {
-            for (int x = 0; x < getImage().getWidth(); x++)
+            for (int x = 0; x < inputImage.getWidth(); x++)
             {
-                int pixel = pixelData[y * getImage().getWidth() + x];
+                int pixel = pixelData[y * inputImage.getWidth() + x];
                 pbuff.put((byte) ((pixel >> 16) & 0xFF));
                 pbuff.put((byte) ((pixel >> 8) & 0xFF));
                 pbuff.put((byte) ((pixel) & 0xFF));
@@ -85,8 +104,8 @@ public class TextureData
         }
         pbuff.flip();
         
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, getImage().getWidth(), getImage().getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pbuff);
-        EngineUtils.log("glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, %s, %s, 0, GL_RGBA, GL_UNSIGNED_BYTE, %s)", image.getWidth(), image.getHeight(), "pbuff (too large)");
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, inputImage.getWidth(), inputImage.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pbuff);
+        EngineUtils.log("glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, %s, %s, 0, GL_RGBA, GL_UNSIGNED_BYTE, %s)", inputImage.getWidth(), inputImage.getHeight(), "pbuff (too large)");
         glGenerateMipmap(GL_TEXTURE_2D);
         EngineUtils.log("glGenerateMipmap(GL_TEXTURE_2D)");
     }

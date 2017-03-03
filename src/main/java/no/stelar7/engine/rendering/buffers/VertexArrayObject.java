@@ -58,4 +58,8 @@ public class VertexArrayObject
         EngineUtils.log("glVertexAttribPointer(%s, %s, %s, %s, %s, %s)", index, size, EngineUtils.glTypeToString(GL_FLOAT), false, stride * Float.BYTES, offset * Float.BYTES);
     }
     
+    public int getId()
+    {
+        return id;
+    }
 }

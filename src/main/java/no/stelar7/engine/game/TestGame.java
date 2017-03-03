@@ -33,30 +33,39 @@ public class TestGame implements Game
         
         shader = new ShaderProgram(vertexShader, fragmentShader);
         
-        float[]     vert  = new float[]{-1, -1, 0, 1, -1, 0, 0, 1, 0};
-        int[]       ind   = new int[]{0, 1, 2};
-        float[]     texd  = new float[]{0, 0, 1, 0, .5f, 1};
-        TextureData tex   = new TextureData(texd, EngineUtils.loadTexture("arrow.png"));
-        Mesh        model = new Mesh(vert, ind, tex);
+        float[] vert = new float[]{-1, -1, 0, 1, -1, 0, 0, 1, 0};
+        int[]   ind  = new int[]{0, 1, 2};
+        float[] texd = new float[]{0, 0, 1, 0, .5f, 1};
         
-        GameObject obj = new GameObject();
-        obj.setModel(model);
+        
+        GameObject obj      = new GameObject();
+        Mesh       triangle = new Mesh(vert, ind, texd);
+        triangle.setTexture(EngineUtils.loadTexture("arrow.png"), 0);
+        obj.setMesh(triangle);
         
         GameObject obj2 = new GameObject();
-        obj2.setModel(model);
-        obj2.getTransform().move(5, 0, 0);
+        Mesh       cube = MeshLoader.loadFromObj("cube.obj");
+        obj2.setMesh(cube);
+        obj2.getTransform().move(10, 0, 0);
         
-        List<GameObject> objs = new ArrayList<>();
-        
-        objs.add(obj);
-        objs.add(obj2);
-        entities.put(model, objs);
+        // addToEntityList(obj);
+        addToEntityList(obj2);
         
         camera = new Camera();
         
         glClearColor(.8f, 0, 0, 0);
         EngineUtils.log("glClearColor(%s, %s, %s, %s)", .8f, 0, 0, 0);
+    }
+    
+    private void addToEntityList(GameObject obj)
+    {
+        Mesh             model = obj.getMesh();
+        List<GameObject> ents  = entities.getOrDefault(model, new ArrayList<>());
         
+        ents.add(obj);
+        entities.put(model, ents);
+        System.out.println(entities.size());
+        System.out.println(ents.size());
     }
     
     private float scale;
@@ -67,16 +76,16 @@ public class TestGame implements Game
         camera.update();
         scale += 0.01f;
         
+        int[] cnt = {0};
         entities.forEach((k, v) ->
                          {
-                             int cnt = 0;
                              for (GameObject o : v)
                              {
-                                 cnt++;
-                                 int dir = cnt % 2 == 0 ? 1 : -1;
+                                 int dir = cnt[0] % 2 == 0 ? 1 : -1;
                                  o.getTransform().setPosition((float) Math.sin(scale) * dir, 0, (float) Math.cos(scale) * dir);
                              }
                          });
+        
     }
     
     
@@ -93,8 +102,8 @@ public class TestGame implements Game
             for (GameObject gameObject : entry.getValue())
             {
                 shader.setUniformMatrix4("mvp", camera.calculateMVPMatrix(gameObject.getTransform()));
-                glDrawElements(GL_TRIANGLES, gameObject.getModel().getVertexCount(), GL_UNSIGNED_INT, MemoryUtil.NULL);
-                EngineUtils.log("glDrawElements(%s, %s, %s, %s)", EngineUtils.glTypeToString(GL_TRIANGLES), gameObject.getModel().getVertexCount(), EngineUtils.glTypeToString(GL_UNSIGNED_INT), MemoryUtil.NULL);
+                glDrawElements(GL_TRIANGLES, gameObject.getMesh().getVertexCount(), GL_UNSIGNED_INT, MemoryUtil.NULL);
+                EngineUtils.log("glDrawElements(%s, %s, %s, %s)", EngineUtils.glTypeToString(GL_TRIANGLES), gameObject.getMesh().getVertexCount(), EngineUtils.glTypeToString(GL_UNSIGNED_INT), MemoryUtil.NULL);
             }
         }
     }

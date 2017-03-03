@@ -1,10 +1,14 @@
 package no.stelar7.engine;
 
+import org.joml.*;
+import org.lwjgl.*;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 
@@ -103,6 +107,64 @@ public final class EngineUtils
         }
     }
     
+    public static FloatBuffer vector3fListToBuffer(List<Vector3f> data)
+    {
+        FloatBuffer buff = BufferUtils.createFloatBuffer(data.size() * 3);
+        for (int i = 0; i < data.size(); i++)
+        {
+            data.get(i).get(i * 3, buff);
+        }
+        return buff;
+    }
+    
+    public static IntBuffer intListToBuffer(List<Integer> data)
+    {
+        IntBuffer buff = BufferUtils.createIntBuffer(data.size());
+        for (Integer item : data)
+        {
+            buff.put(item);
+        }
+        buff.flip();
+        return buff;
+    }
+    
+    public static FloatBuffer floatListToBuffer(List<Float> data)
+    {
+        FloatBuffer buff = BufferUtils.createFloatBuffer(data.size());
+        for (Float item : data)
+        {
+            buff.put(item);
+        }
+        buff.flip();
+        return buff;
+    }
+    
+    public static FloatBuffer vector2fListToBuffer(List<Vector2f> data)
+    {
+        FloatBuffer buff = BufferUtils.createFloatBuffer(data.size() * 2);
+        for (int i = 0; i < data.size(); i++)
+        {
+            data.get(i).get(i * 2, buff);
+        }
+        return buff;
+    }
+    
+    public static FloatBuffer floatArrayToBuffer(float[] tex)
+    {
+        FloatBuffer buff = BufferUtils.createFloatBuffer(tex.length);
+        buff.put(tex);
+        buff.flip();
+        return buff;
+    }
+    
+    public static IntBuffer intArrayToBuffer(int[] ind)
+    {
+        IntBuffer buff = BufferUtils.createIntBuffer(ind.length);
+        buff.put(ind);
+        buff.flip();
+        return buff;
+    }
+    
     public static String readShader(String filename)
     {
         return readTextFile("/shaders/" + filename);
@@ -125,12 +187,16 @@ public final class EngineUtils
         return null;
     }
     
+    public static String readObjFile(String filename)
+    {
+        return readTextFile("/models/" + filename);
+    }
+    
     public static BufferedImage loadTexture(String pathToFile)
     {
         try
         {
-            InputStream stream = EngineUtils.class.getResourceAsStream("/textures/" + pathToFile);
-            return ImageIO.read(stream);
+            return ImageIO.read(EngineUtils.class.getResourceAsStream("/textures/" + pathToFile));
         } catch (IOException e)
         {
             e.printStackTrace();

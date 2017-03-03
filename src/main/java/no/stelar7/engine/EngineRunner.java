@@ -23,7 +23,7 @@ public class EngineRunner
     private long    window;
     private boolean shouldClose;
     
-    public static final boolean DEBUG_MODE = true;
+    public static final boolean DEBUG_MODE = false;
     
     private Game game;
     

@@ -7,16 +7,16 @@ public class GameObject
     
     protected Transform transform = new Transform();
     
-    private Mesh model;
+    private Mesh mesh;
     
-    public void setModel(Mesh model)
+    public void setMesh(Mesh mesh)
     {
-        this.model = model;
+        this.mesh = mesh;
     }
     
-    public Mesh getModel()
+    public Mesh getMesh()
     {
-        return model;
+        return mesh;
     }
     
     public Transform getTransform()
