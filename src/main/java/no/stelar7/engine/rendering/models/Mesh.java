@@ -2,13 +2,11 @@ package no.stelar7.engine.rendering.models;
 
 import no.stelar7.engine.EngineUtils;
 import no.stelar7.engine.rendering.buffers.*;
-import org.joml.*;
+import org.joml.Vector3f;
 
-import java.awt.image.BufferedImage;
 import java.nio.*;
-import java.util.*;
+import java.util.List;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
 public class Mesh
@@ -19,32 +17,32 @@ public class Mesh
     private final VertexBufferObject ibo = new VertexBufferObject(GL_ELEMENT_ARRAY_BUFFER);
     
     private final VertexBufferObject tbo = new VertexBufferObject(GL_ARRAY_BUFFER);
-    private TextureData textureData;
     
     private final VertexBufferObject nbo = new VertexBufferObject(GL_ARRAY_BUFFER);
     
     private final int vertexCount;
     
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass())
-        {
-            return false;
-        }
-        
-        Mesh mesh = (Mesh) o;
-        return vao.getId() == mesh.vao.getId();
-    }
+    private TextureData texture;
     
-    @Override
-    public int hashCode()
+    public Mesh(FloatBuffer vertexBuffer, IntBuffer indexBuffer, FloatBuffer normalBuffer, FloatBuffer textureBuffer)
     {
-        return vao.hashCode();
+        vertexCount = indexBuffer.capacity();
+        
+        vao.generate();
+        vbo.generate();
+        ibo.generate();
+        tbo.generate();
+        nbo.generate();
+        
+        bind();
+        
+        setVertices(vertexBuffer);
+        setIndices(indexBuffer);
+        setTextureCoordinates(textureBuffer);
+        setNormals(normalBuffer);
+        
+        unbind();
+        
     }
     
     public Mesh(float[] vert, int[] ind, float[] tex)
@@ -58,20 +56,17 @@ public class Mesh
         
         bind();
         
-        FloatBuffer vbuff = EngineUtils.floatArrayToBuffer(vert);
-        setVertices(vbuff);
-        
-        IntBuffer ibuff = EngineUtils.intArrayToBuffer(ind);
-        setIndices(ibuff);
-        
-        FloatBuffer tbuff = EngineUtils.floatArrayToBuffer(tex);
-        setTextureCoordinates(tbuff);
+        setVertices(EngineUtils.floatArrayToBuffer(vert));
+        setIndices(EngineUtils.intArrayToBuffer(ind));
+        setTextureCoordinates(EngineUtils.floatArrayToBuffer(tex));
         
         unbind();
     }
     
-    public Mesh(List<Vector3f> vertices, List<Integer> indecies, List<Vector3f> normals, List<Vector2f> textures)
+    public Mesh(List<Vector3f> vertices, List<Integer> indecies, List<Float> normals, List<Float> textures)
     {
+        vertexCount = indecies.size();
+        
         vao.generate();
         vbo.generate();
         ibo.generate();
@@ -80,18 +75,10 @@ public class Mesh
         
         bind();
         
-        FloatBuffer vbuff = EngineUtils.vector3fListToBuffer(vertices);
-        setVertices(vbuff);
-        
-        IntBuffer ibuff = EngineUtils.intListToBuffer(indecies);
-        setIndices(ibuff);
-        vertexCount = indecies.size();
-        
-        FloatBuffer tbuff = EngineUtils.vector2fListToBuffer(textures);
-        setTextureCoordinates(tbuff);
-        
-        FloatBuffer nbuff = EngineUtils.vector3fListToBuffer(normals);
-        setNormals(nbuff);
+        setVertices(EngineUtils.vector3fListToBuffer(vertices));
+        setIndices(EngineUtils.intListToBuffer(indecies));
+        setTextureCoordinates(EngineUtils.floatListToBuffer(textures));
+        setNormals(EngineUtils.floatListToBuffer(normals));
         
         unbind();
         
@@ -125,32 +112,31 @@ public class Mesh
         nbo.setData(norm);
         vao.enableAttribIndex(2);
         vao.setPointer(2, 2);
+        
     }
     
-    public void setTexture(BufferedImage image, int texId)
+    
+    public void setTexture(TextureData texture)
     {
-        Map<Integer, Integer> params = new HashMap<>();
-        params.put(GL_TEXTURE_WRAP_S, GL_REPEAT);
-        params.put(GL_TEXTURE_WRAP_T, GL_REPEAT);
-        params.put(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        params.put(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-        textureData = new TextureData();
-        textureData.generateTexture();
-        textureData.setActiveTexture(texId);
-        textureData.bindTexture();
-        textureData.setParameters(params);
-        textureData.setImageData(image);
+        this.texture = texture;
     }
     
     public void bind()
     {
         vao.bind();
+        if (texture != null)
+        {
+            texture.bind();
+        }
     }
     
     public void unbind()
     {
         vao.unbind();
+        if (texture != null)
+        {
+            texture.unbind();
+        }
     }
     
     public void delete()
@@ -167,10 +153,10 @@ public class Mesh
         vbo.delete();
         vao.delete();
         
-        if (textureData != null)
+        if (texture != null)
         {
-            textureData.delete();
-            textureData.unbind();
+            texture.unbind();
+            texture.delete();
         }
     }
     
@@ -179,4 +165,31 @@ public class Mesh
         return vertexCount;
     }
     
+    public TextureData getTexture()
+    {
+        return texture;
+    }
+    
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        
+        Mesh mesh = (Mesh) o;
+        return vao.getId() == mesh.vao.getId();
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        return vao.hashCode();
+    }
 }

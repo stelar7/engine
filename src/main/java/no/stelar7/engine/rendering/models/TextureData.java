@@ -62,7 +62,7 @@ public class TextureData
         EngineUtils.log("glGenTextures() = %s", id);
     }
     
-    public void bindTexture()
+    public void bind()
     {
         glBindTexture(GL_TEXTURE_2D, id);
         EngineUtils.log("glBindTexture(GL_TEXTURE_2D, %s)", id);

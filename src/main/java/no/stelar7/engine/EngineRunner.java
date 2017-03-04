@@ -87,6 +87,9 @@ public class EngineRunner
         glfwSetCursorPosCallback(window, new MousePosHandler());
         glfwSetMouseButtonCallback(window, new MouseButtonHandler());
         glfwSetKeyCallback(window, new KeyboardHandler());
+        InputHandler.windowHandle = window;
+        InputHandler.windowWidth = width;
+        InputHandler.windowHeight = width;
         
         glfwSetFramebufferSizeCallback(window, (windowPtr, w, h) ->
                                        {

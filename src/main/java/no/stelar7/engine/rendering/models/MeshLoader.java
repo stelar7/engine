@@ -11,7 +11,7 @@ public class MeshLoader
     {
         String[] data = EngineUtils.readObjFile(filename).split("\n");
         
-        List<Vector3f> vertex = new ArrayList<>();
+        List<Vector3f> vertex   = new ArrayList<>();
         List<Vector3f> tempNorm = new ArrayList<>();
         List<Vector2f> tempTex  = new ArrayList<>();
         
@@ -19,8 +19,8 @@ public class MeshLoader
         List<Integer> nIndex = new ArrayList<>();
         List<Integer> tIndex = new ArrayList<>();
         
-        List<Vector3f> normal  = new ArrayList<>();
-        List<Vector2f> texture = new ArrayList<>();
+        List<Vector3f> normals  = new ArrayList<>();
+        List<Vector2f> textures = new ArrayList<>();
         
         for (String line : data)
         {
@@ -60,66 +60,25 @@ public class MeshLoader
             
             if ("f".equals(lineParts[0]))
             {
-                if (lineParts[1].matches("\\d"))
-                {
-                    int part1 = Integer.parseInt(lineParts[1]);
-                    int part2 = Integer.parseInt(lineParts[2]);
-                    int part3 = Integer.parseInt(lineParts[3]);
-                    vIndex.add(part1);
-                    vIndex.add(part2);
-                    vIndex.add(part3);
-                }
-                if (lineParts[1].matches("\\d/\\d"))
-                {
-                    int part1 = Integer.parseInt(lineParts[1].split("/")[0]);
-                    int part2 = Integer.parseInt(lineParts[2].split("/")[0]);
-                    int part3 = Integer.parseInt(lineParts[3].split("/")[0]);
-                    vIndex.add(part1);
-                    vIndex.add(part2);
-                    vIndex.add(part3);
-                    
-                    part1 = Integer.parseInt(lineParts[1].split("/")[1]);
-                    part2 = Integer.parseInt(lineParts[2].split("/")[1]);
-                    part3 = Integer.parseInt(lineParts[3].split("/")[1]);
-                    tIndex.add(part1);
-                    tIndex.add(part2);
-                    tIndex.add(part3);
-                }
                 if (lineParts[1].matches("\\d/\\d/\\d"))
                 {
-                    int part1 = Integer.parseInt(lineParts[1].split("/")[0]);
-                    int part2 = Integer.parseInt(lineParts[2].split("/")[0]);
-                    int part3 = Integer.parseInt(lineParts[3].split("/")[0]);
+                    int part1 = Integer.parseInt(lineParts[1].split("/")[0].trim());
+                    int part2 = Integer.parseInt(lineParts[2].split("/")[0].trim());
+                    int part3 = Integer.parseInt(lineParts[3].split("/")[0].trim());
                     vIndex.add(part1);
                     vIndex.add(part2);
                     vIndex.add(part3);
                     
-                    part1 = Integer.parseInt(lineParts[1].split("/")[1]);
-                    part2 = Integer.parseInt(lineParts[2].split("/")[1]);
-                    part3 = Integer.parseInt(lineParts[3].split("/")[1]);
+                    part1 = Integer.parseInt(lineParts[1].split("/")[1].trim());
+                    part2 = Integer.parseInt(lineParts[2].split("/")[1].trim());
+                    part3 = Integer.parseInt(lineParts[3].split("/")[1].trim());
                     tIndex.add(part1);
                     tIndex.add(part2);
                     tIndex.add(part3);
                     
-                    part1 = Integer.parseInt(lineParts[1].split("/")[2]);
-                    part2 = Integer.parseInt(lineParts[2].split("/")[2]);
-                    part3 = Integer.parseInt(lineParts[3].split("/")[2]);
-                    nIndex.add(part1);
-                    nIndex.add(part2);
-                    nIndex.add(part3);
-                }
-                if (lineParts[1].matches("\\d//\\d"))
-                {
-                    int part1 = Integer.parseInt(lineParts[1].split("//")[0]);
-                    int part2 = Integer.parseInt(lineParts[2].split("//")[0]);
-                    int part3 = Integer.parseInt(lineParts[3].split("//")[0]);
-                    vIndex.add(part1);
-                    vIndex.add(part2);
-                    vIndex.add(part3);
-                    
-                    part1 = Integer.parseInt(lineParts[1].split("//")[1]);
-                    part2 = Integer.parseInt(lineParts[2].split("//")[1]);
-                    part3 = Integer.parseInt(lineParts[3].split("//")[1]);
+                    part1 = Integer.parseInt(lineParts[1].split("/")[2].trim());
+                    part2 = Integer.parseInt(lineParts[2].split("/")[2].trim());
+                    part3 = Integer.parseInt(lineParts[3].split("/")[2].trim());
                     nIndex.add(part1);
                     nIndex.add(part2);
                     nIndex.add(part3);
@@ -127,14 +86,17 @@ public class MeshLoader
             }
         }
         
-        for (Integer normalIndex : nIndex)
+        for (Integer vertexPointer : vIndex)
         {
-            normal.add(tempNorm.get(normalIndex - 1));
+            int vptr = vertexPointer - 1;
+            
+            Vector2f tex = tempTex.get(tIndex.get(vptr) - 1);
+            textures.add(tex);
+            
+            Vector3f norm = tempNorm.get(nIndex.get(vptr) - 1);
+            normals.add(norm);
         }
-        for (Integer textureIndex : tIndex)
-        {
-            texture.add(tempTex.get(textureIndex - 1));
-        }
-        return new Mesh(vertex, vIndex, normal, texture);
+        
+        return new Mesh(EngineUtils.vector3fListToBuffer(vertex), EngineUtils.intListToBuffer(vIndex), EngineUtils.vector3fListToBuffer(normals), EngineUtils.vector2fListToBuffer(textures));
     }
 }

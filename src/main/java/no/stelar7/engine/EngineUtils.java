@@ -1,16 +1,22 @@
 package no.stelar7.engine;
 
+import no.stelar7.engine.rendering.models.TextureData;
 import org.joml.*;
 import org.lwjgl.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.*;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.*;
 import java.util.logging.*;
-import java.util.stream.Collectors;
+import java.util.logging.Formatter;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public final class EngineUtils
 {
@@ -172,19 +178,20 @@ public final class EngineUtils
     
     public static String readTextFile(String pathToFile)
     {
-        InputStream stream = EngineUtils.class.getResourceAsStream(pathToFile);
-        try (InputStreamReader isr = new InputStreamReader(stream, StandardCharsets.UTF_8))
+        try
         {
-            try (BufferedReader br = new BufferedReader(isr))
-            {
-                return br.lines().collect(Collectors.joining("\n"));
-            }
-        } catch (IOException e)
+            File             file       = new File(EngineUtils.class.getResource(pathToFile).toURI());
+            RandomAccessFile raf        = new RandomAccessFile(file, "r");
+            FileChannel      channel    = raf.getChannel();
+            MappedByteBuffer buffer     = channel.map(MapMode.READ_ONLY, 0, channel.size());
+            byte[]           bufferData = new byte[(int) channel.size()];
+            buffer.get(bufferData);
+            return new String(bufferData, StandardCharsets.UTF_8);
+        } catch (IOException | URISyntaxException e)
         {
             e.printStackTrace();
+            return null;
         }
-        
-        return null;
     }
     
     public static String readObjFile(String filename)
@@ -192,11 +199,23 @@ public final class EngineUtils
         return readTextFile("/models/" + filename);
     }
     
-    public static BufferedImage loadTexture(String pathToFile)
+    public static TextureData loadTexture(String pathToFile)
     {
         try
         {
-            return ImageIO.read(EngineUtils.class.getResourceAsStream("/textures/" + pathToFile));
+            BufferedImage         image  = ImageIO.read(EngineUtils.class.getResourceAsStream("/textures/" + pathToFile));
+            Map<Integer, Integer> params = new HashMap<>();
+            params.put(GL_TEXTURE_WRAP_S, GL_REPEAT);
+            params.put(GL_TEXTURE_WRAP_T, GL_REPEAT);
+            params.put(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            params.put(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            
+            TextureData textureData = new TextureData();
+            textureData.generateTexture();
+            textureData.bind();
+            textureData.setParameters(params);
+            textureData.setImageData(image);
+            return textureData;
         } catch (IOException e)
         {
             e.printStackTrace();
