@@ -2,101 +2,120 @@ package no.stelar7.engine.rendering.models;
 
 import no.stelar7.engine.EngineUtils;
 import org.joml.*;
+import org.lwjgl.*;
 
+import java.nio.*;
 import java.util.*;
 
 public class MeshLoader
 {
-    public static Mesh loadFromObj(String filename)
+    private static final List<Vector3f> vertices = new ArrayList<>();
+    private static final List<Vector3f> normals  = new ArrayList<>();
+    private static final List<Vector2f> textures = new ArrayList<>();
+    private static final List<Integer>  indexes  = new ArrayList<>();
+    
+    private static FloatBuffer vertexBuffer;
+    private static FloatBuffer textureBuffer;
+    private static FloatBuffer normalBuffer;
+    private static IntBuffer   indexBuffer;
+    
+    public synchronized static Mesh loadFromObj(String filename)
     {
-        String[] data = EngineUtils.readObjFile(filename).split("\n");
+        vertices.clear();
+        normals.clear();
+        textures.clear();
+        indexes.clear();
         
-        List<Vector3f> vertex   = new ArrayList<>();
-        List<Vector3f> tempNorm = new ArrayList<>();
-        List<Vector2f> tempTex  = new ArrayList<>();
+        String[] lines  = EngineUtils.readObjFile(filename).split("\n");
+        boolean  parsed = false;
         
-        List<Integer> vIndex = new ArrayList<>();
-        List<Integer> nIndex = new ArrayList<>();
-        List<Integer> tIndex = new ArrayList<>();
-        
-        List<Vector3f> normals  = new ArrayList<>();
-        List<Vector2f> textures = new ArrayList<>();
-        
-        for (String line : data)
+        for (String line : lines)
         {
+            
             if (line.trim().isEmpty())
             {
                 continue;
             }
-            if (line.startsWith("#"))
+            
+            String[] parts = line.split(" ");
+            
+            if ("v".equalsIgnoreCase(parts[0]))
             {
-                continue;
+                Vector3f vec = new Vector3f();
+                vec.x = Float.parseFloat(parts[1]);
+                vec.y = Float.parseFloat(parts[2]);
+                vec.z = Float.parseFloat(parts[3]);
+                vertices.add(vec);
             }
             
-            String[] lineParts = line.split(" ");
             
-            if ("v".equals(lineParts[0]))
+            if ("vt".equalsIgnoreCase(parts[0]))
             {
-                float x = Float.parseFloat(lineParts[1]);
-                float y = Float.parseFloat(lineParts[2]);
-                float z = Float.parseFloat(lineParts[3]);
-                vertex.add(new Vector3f(x, y, z));
+                Vector2f vec = new Vector2f();
+                vec.x = Float.parseFloat(parts[1]);
+                vec.y = Float.parseFloat(parts[2]);
+                textures.add(vec);
             }
             
-            if ("vt".equals(lineParts[0]))
+            
+            if ("vn".equalsIgnoreCase(parts[0]))
             {
-                float u = Float.parseFloat(lineParts[1]);
-                float v = Float.parseFloat(lineParts[2]);
-                tempTex.add(new Vector2f(u, v));
+                Vector3f vec = new Vector3f();
+                vec.x = Float.parseFloat(parts[1]);
+                vec.y = Float.parseFloat(parts[2]);
+                vec.z = Float.parseFloat(parts[3]);
+                vec.normalize();
+                normals.add(vec);
             }
             
-            if ("vn".equals(lineParts[0]))
+            if ("f".equalsIgnoreCase(parts[0]))
             {
-                float x = Float.parseFloat(lineParts[1]);
-                float y = Float.parseFloat(lineParts[2]);
-                float z = Float.parseFloat(lineParts[3]);
-                tempNorm.add(new Vector3f(x, y, z));
-            }
-            
-            if ("f".equals(lineParts[0]))
-            {
-                if (lineParts[1].matches("\\d/\\d/\\d"))
+                if (!parsed)
                 {
-                    int part1 = Integer.parseInt(lineParts[1].split("/")[0].trim());
-                    int part2 = Integer.parseInt(lineParts[2].split("/")[0].trim());
-                    int part3 = Integer.parseInt(lineParts[3].split("/")[0].trim());
-                    vIndex.add(part1);
-                    vIndex.add(part2);
-                    vIndex.add(part3);
-                    
-                    part1 = Integer.parseInt(lineParts[1].split("/")[1].trim());
-                    part2 = Integer.parseInt(lineParts[2].split("/")[1].trim());
-                    part3 = Integer.parseInt(lineParts[3].split("/")[1].trim());
-                    tIndex.add(part1);
-                    tIndex.add(part2);
-                    tIndex.add(part3);
-                    
-                    part1 = Integer.parseInt(lineParts[1].split("/")[2].trim());
-                    part2 = Integer.parseInt(lineParts[2].split("/")[2].trim());
-                    part3 = Integer.parseInt(lineParts[3].split("/")[2].trim());
-                    nIndex.add(part1);
-                    nIndex.add(part2);
-                    nIndex.add(part3);
+                    textureBuffer = BufferUtils.createFloatBuffer(vertices.size() * 2);
+                    normalBuffer = BufferUtils.createFloatBuffer(vertices.size() * 3);
+                    parsed = true;
                 }
+                
+                
+                String[] v1 = parts[1].split("/");
+                String[] v2 = parts[2].split("/");
+                String[] v3 = parts[3].split("/");
+                processVertex(v1);
+                processVertex(v2);
+                processVertex(v3);
             }
         }
         
-        for (Integer vertexPointer : vIndex)
+        vertexBuffer = BufferUtils.createFloatBuffer(vertices.size() * 3);
+        indexBuffer = BufferUtils.createIntBuffer(indexes.size());
+        
+        for (int i = 0; i < vertices.size(); i++)
         {
-            int vptr = vertexPointer - 1;
-            
-            Vector2f tex = tempTex.get(tIndex.get(vptr) - 1);
-            textures.add(tex);
-            
-            Vector3f norm = tempNorm.get(nIndex.get(vptr) - 1);
-            normals.add(norm);
+            vertices.get(i).get(i * 3, vertexBuffer);
         }
         
-        return new Mesh(EngineUtils.vector3fListToBuffer(vertex), EngineUtils.intListToBuffer(vIndex), EngineUtils.vector3fListToBuffer(normals), EngineUtils.vector2fListToBuffer(textures));
+        for (int i = 0; i < indexes.size(); i++)
+        {
+            indexBuffer.put(i, indexes.get(i));
+        }
+        
+        return new Mesh(vertexBuffer, indexBuffer, normalBuffer, textureBuffer);
+        
+    }
+    
+    private static void processVertex(final String[] vertex)
+    {
+        int vertexIndex = Integer.parseInt(vertex[0].trim()) - 1;
+        indexes.add(vertexIndex);
+        
+        Vector2f texture = textures.get(Integer.parseInt(vertex[1].trim()) - 1);
+        textureBuffer.put(vertexIndex * 2, texture.x);
+        textureBuffer.put(vertexIndex * 2 + 1, texture.y);
+        
+        Vector3f normal = normals.get(Integer.parseInt(vertex[2].trim()) - 1);
+        normalBuffer.put(vertexIndex * 3, normal.x);
+        normalBuffer.put(vertexIndex * 3 + 1, normal.y);
+        normalBuffer.put(vertexIndex * 3 + 2, normal.z);
     }
 }

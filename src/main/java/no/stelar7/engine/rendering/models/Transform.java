@@ -20,7 +20,6 @@ public class Transform
     private void updateTransform()
     {
         lastTransform.set(currentTransform);
-        //new Matrix4f().translation(position).rotate(rotation).scale(scale, currentTransform);
         new Matrix4f().scaling(scale).rotate(rotation).translate(position, currentTransform);
     }
     

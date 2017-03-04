@@ -11,9 +11,9 @@ public final class InputHandler
         // Hide public constructor
     }
     
-    public static float windowHeight;
-    public static float windowWidth;
-    public static long  windowHandle;
+    private static float windowHeight;
+    private static float windowWidth;
+    private static long  windowHandle;
     
     private static final boolean[] keys  = new boolean[GLFW_KEY_LAST];
     private static final Vector2f  mouse = new Vector2f();
@@ -52,5 +52,20 @@ public final class InputHandler
     public static boolean isKeyDown(int key)
     {
         return keys[key];
+    }
+    
+    public static void setWindowHeight(float windowHeight)
+    {
+        InputHandler.windowHeight = windowHeight;
+    }
+    
+    public static void setWindowWidth(float windowWidth)
+    {
+        InputHandler.windowWidth = windowWidth;
+    }
+    
+    public static void setWindowHandle(long windowHandle)
+    {
+        InputHandler.windowHandle = windowHandle;
     }
 }

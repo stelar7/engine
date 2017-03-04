@@ -4,7 +4,6 @@ import no.stelar7.engine.EngineUtils;
 import no.stelar7.engine.rendering.*;
 import no.stelar7.engine.rendering.models.*;
 import no.stelar7.engine.rendering.shaders.*;
-import org.joml.Math;
 import org.lwjgl.system.*;
 
 import java.util.*;
@@ -38,20 +37,24 @@ public class TestGame implements Game
         float[] texd = new float[]{0, 0, 1, 0, .5f, 1};
         
         
-        GameObject obj      = new GameObject();
-        Mesh       triangle = new Mesh(vert, ind, texd);
-        triangle.setTexture(EngineUtils.loadTexture("arrow.png"));
-        obj.setMesh(triangle);
+        Mesh        triangle = new Mesh(vert, ind, texd);
+        Mesh        cube     = MeshLoader.loadFromObj("cube.obj");
+        TextureData arrow    = EngineUtils.loadTexture("arrow.png");
+        TextureData wall     = EngineUtils.loadTexture("wall.jpg");
+        
+        GameObject obj = new GameObject();
+        obj.setMesh(cube);
+        obj.setTexture(arrow);
         
         GameObject obj2 = new GameObject();
-        Mesh       cube = MeshLoader.loadFromObj("cube.obj");
         obj2.setMesh(cube);
+        obj2.setTexture(wall);
         obj2.getTransform().move(10, 0, 0);
         
         addToEntityList(obj);
         addToEntityList(obj2);
         
-        camera = new FPSCamera();
+        camera = new Camera();
         
         glClearColor(.8f, 0, 0, 0);
         EngineUtils.log("glClearColor(%s, %s, %s, %s)", .8f, 0, 0, 0);
@@ -74,15 +77,11 @@ public class TestGame implements Game
         camera.update();
         scale += 0.01f;
         
-        int[] cnt = {0};
         entities.forEach((k, v) ->
                          {
                              for (GameObject o : v)
                              {
-                                 ++cnt[0];
-                                 int dir = cnt[0] % 2 == 0 ? 1 : -1;
-                                 o.getTransform().setPosition((float) Math.sin(scale) * dir, 0, (float) Math.cos(scale) * dir);
-                                 o.getTransform().setScale((float) Math.cos(scale) * dir, (float) Math.sin(scale), 1);
+                                 o.getTransform().setRotation(0, scale, 0);
                              }
                          });
         
@@ -101,18 +100,18 @@ public class TestGame implements Game
             entry.getKey().bind();
             for (GameObject gameObject : entry.getValue())
             {
-                if (gameObject.getMesh().getTexture() != null)
+                if (gameObject.getTexture() != null)
                 {
-                    gameObject.getMesh().getTexture().bind();
+                    gameObject.getTexture().bind();
                 }
                 
                 shader.setUniformMatrix4("mvp", camera.calculateMVPMatrix(gameObject.getTransform()));
                 glDrawElements(GL_TRIANGLES, gameObject.getMesh().getVertexCount(), GL_UNSIGNED_INT, MemoryUtil.NULL);
                 EngineUtils.log("glDrawElements(%s, %s, %s, %s)", EngineUtils.glTypeToString(GL_TRIANGLES), gameObject.getMesh().getVertexCount(), EngineUtils.glTypeToString(GL_UNSIGNED_INT), MemoryUtil.NULL);
                 
-                if (gameObject.getMesh().getTexture() != null)
+                if (gameObject.getTexture() != null)
                 {
-                    gameObject.getMesh().getTexture().unbind();
+                    gameObject.getTexture().unbind();
                 }
             }
         }

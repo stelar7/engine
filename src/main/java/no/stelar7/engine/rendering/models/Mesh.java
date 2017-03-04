@@ -22,8 +22,6 @@ public class Mesh
     
     private final int vertexCount;
     
-    private TextureData texture;
-    
     public Mesh(FloatBuffer vertexBuffer, IntBuffer indexBuffer, FloatBuffer normalBuffer, FloatBuffer textureBuffer)
     {
         vertexCount = indexBuffer.capacity();
@@ -116,27 +114,14 @@ public class Mesh
     }
     
     
-    public void setTexture(TextureData texture)
-    {
-        this.texture = texture;
-    }
-    
     public void bind()
     {
         vao.bind();
-        if (texture != null)
-        {
-            texture.bind();
-        }
     }
     
     public void unbind()
     {
         vao.unbind();
-        if (texture != null)
-        {
-            texture.unbind();
-        }
     }
     
     public void delete()
@@ -152,22 +137,11 @@ public class Mesh
         ibo.delete();
         vbo.delete();
         vao.delete();
-        
-        if (texture != null)
-        {
-            texture.unbind();
-            texture.delete();
-        }
     }
     
     public int getVertexCount()
     {
         return vertexCount;
-    }
-    
-    public TextureData getTexture()
-    {
-        return texture;
     }
     
     

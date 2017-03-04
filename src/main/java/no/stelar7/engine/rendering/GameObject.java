@@ -7,7 +7,19 @@ public class GameObject
     
     protected Transform transform = new Transform();
     
-    private Mesh mesh;
+    private Mesh        mesh;
+    private TextureData texture;
+    
+    public TextureData getTexture()
+    {
+        return texture;
+    }
+    
+    public void setTexture(TextureData texture)
+    {
+        
+        this.texture = texture;
+    }
     
     public void setMesh(Mesh mesh)
     {

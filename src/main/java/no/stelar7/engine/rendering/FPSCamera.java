@@ -2,14 +2,12 @@ package no.stelar7.engine.rendering;
 
 import no.stelar7.engine.handlers.InputHandler;
 
-import static org.lwjgl.glfw.GLFW.*;
-
 public class FPSCamera extends Camera
 {
     public FPSCamera()
     {
         super();
-        InputHandler.setCursor(GLFW_CURSOR_DISABLED);
+        //InputHandler.setCursor(GLFW_CURSOR_DISABLED);
     }
     
     @Override

@@ -87,9 +87,10 @@ public class EngineRunner
         glfwSetCursorPosCallback(window, new MousePosHandler());
         glfwSetMouseButtonCallback(window, new MouseButtonHandler());
         glfwSetKeyCallback(window, new KeyboardHandler());
-        InputHandler.windowHandle = window;
-        InputHandler.windowWidth = width;
-        InputHandler.windowHeight = width;
+        
+        InputHandler.setWindowHandle(window);
+        InputHandler.setWindowWidth(width);
+        InputHandler.setWindowHeight(height);
         
         glfwSetFramebufferSizeCallback(window, (windowPtr, w, h) ->
                                        {
@@ -128,6 +129,9 @@ public class EngineRunner
         
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+        
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         
         initPostGL();
         
